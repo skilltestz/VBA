@@ -7,6 +7,7 @@ Sub LookupGroupAndMasterService()
     Dim wsMaster As Worksheet
     Dim wsProduct As Worksheet
     Dim wsBU As Worksheet
+    Dim wsBranch As Worksheet
     Dim lastRow1 As Long
     Dim lookupKey As Variant
     Dim matchRow As Range
@@ -21,7 +22,7 @@ Sub LookupGroupAndMasterService()
     Set wsGroup = wb2.Sheets("Group Package")
     Set wsMaster = wb2.Sheets("MasterService")
     Set wsProduct = wb2.Sheets("ProductinCat.Group.Type")
-    Set wsBU = wb2.Sheets("BU,Category")
+    Set wsBU = wb2.Sheets("BU,Category ")
 
     ' === เคลียร์ข้อมูลใน Column G:I ค้นหา ===
     lastRow1 = ws1.Cells(ws1.Rows.Count, "J").End(xlUp).Row
@@ -91,13 +92,13 @@ For i = 2 To lastRow2
         End If
     End If
 Next i
-    ' === ขั้นตอนที่ 5: เพิ่มคอลัมน์ I (เลื่อน I เดิมเป็น J) ===
-    ws1.Columns("I").Insert Shift:=xlToRight
-    ws1.Columns("I").NumberFormat = "hh:mm:ss AM/PM"
+    ' === ขั้นตอนที่ 5: เพิ่มคอลัมน์ F (เลื่อนเป็น G เดิมเป็น F) ===
+    ws1.Columns("F").Insert Shift:=xlToRight
+    ws1.Columns("F").NumberFormat = "hh:mm:ss AM/PM"
 
     ' === ใช้ Text to Columns แยก Column H ด้วย space ===
-    With ws1.Range("H2:H" & lastRow1)
-    .TextToColumns Destination:=ws1.Range("H2"), _
+    With ws1.Range("E:E" & lastRow1)
+    .TextToColumns Destination:=ws1.Range("E2"), _
         DataType:=xlDelimited, _
         TextQualifier:=xlDoubleQuote, _
         ConsecutiveDelimiter:=False, _
@@ -108,6 +109,17 @@ Next i
         Other:=False
 End With
 
-    MsgBox "ค้นหาข้อมูลจาก Group Package และ MasterService เสร็จแล้ว", vbInformation
+    ' === ขั้นตอนที่ 6: เพิ่มคอลัมน์ C,E,F (เลื่อนเป็น C,E,F เดิมเป็น F,G,H) ===
+ws1.Columns("C:E:F").Insert Shift:=xlToRight
+    ' === นับตัวอักษรตั้งแต่ตัวที่ 3 จำนวน 2 ของ Column B ใส่ใน Column C
+For i = 2 To lastRow1
+    If Len(ws1.Cells(i, "B").Value) >= 4 Then
+        ws1.Cells(i, "C").Value = Mid(ws1.Cells(i, "B").Value, 3, 2)   
+    Else
+        ws1.Cells(i, "C").Value = ""
+    End If
+Next i
+
+    MsgBox "Done", vbInformation
 
 End Sub
