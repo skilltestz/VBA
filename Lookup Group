@@ -18,7 +18,7 @@ Sub LookupGroupAndMasterService()
     Set wb2 = Workbooks.Open("Path")
     Set wsGroup = wb2.Sheets("Group Package")
     Set wsMaster = wb2.Sheets("MasterService")
-    Set wsProdct = wb2.Sheets("ProductinCat.Group.Type")
+    Set wsProduct = wb2.Sheets("ProductinCat.Group.Type")
 
     ' === เคลียร์ข้อมูลใน Column G:I ค้นหา ===
     lastRow1 = ws1.Cells(ws1.Rows.Count, "J").End(xlUp).Row
