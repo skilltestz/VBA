@@ -5,6 +5,8 @@ Sub LookupGroupAndMasterService()
     Dim ws1 As Worksheet
     Dim wsGroup As Worksheet
     Dim wsMaster As Worksheet
+    Dim wsProduct As Worksheet
+    Dim wsBU As Worksheet
     Dim lastRow1 As Long
     Dim lookupKey As Variant
     Dim matchRow As Range
@@ -19,6 +21,7 @@ Sub LookupGroupAndMasterService()
     Set wsGroup = wb2.Sheets("Group Package")
     Set wsMaster = wb2.Sheets("MasterService")
     Set wsProduct = wb2.Sheets("ProductinCat.Group.Type")
+    Set wsBU = wb2.Sheets("BU,Category")
 
     ' === เคลียร์ข้อมูลใน Column G:I ค้นหา ===
     lastRow1 = ws1.Cells(ws1.Rows.Count, "J").End(xlUp).Row
@@ -71,6 +74,39 @@ Sub LookupGroupAndMasterService()
             End If
         End If
     Next i
+    ' === ขั้นที่ 4: เพิ่มคอลัมน์ G แล้วใส่ BU Name จาก BU,Category ===
+
+' แทรกคอลัมน์ G ใหม่ (ข้อมูลเดิมเลื่อนไป H, I, J)
+ws1.Columns("G").Insert Shift:=xlToRight
+
+' ค้นจาก Column H (เดิมคือ G) แล้วใส่ผลลัพธ์ใน G
+For i = 2 To lastRow2
+    lookupKey = ws1.Cells(i, "H").Value ' เดิมอยู่ G → ตอนนี้เลื่อนเป็น H
+
+    If Not IsEmpty(lookupKey) Then
+        Set matchRow = wsBU.Range("A:A").Find(What:=lookupKey, LookIn:=xlValues, LookAt:=xlWhole)
+
+        If Not matchRow Is Nothing Then
+            ws1.Cells(i, "G").Value = wsBU.Cells(matchRow.Row, "B").Value
+        End If
+    End If
+Next i
+    ' === ขั้นตอนที่ 5: เพิ่มคอลัมน์ I (เลื่อน I เดิมเป็น J) ===
+    ws1.Columns("I").Insert Shift:=xlToRight
+    ws1.Columns("I").NumberFormat = "hh:mm:ss AM/PM"
+
+    ' === ใช้ Text to Columns แยก Column H ด้วย space ===
+    With ws1.Range("H2:H" & lastRow1)
+    .TextToColumns Destination:=ws1.Range("H2"), _
+        DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, _
+        ConsecutiveDelimiter:=False, _
+        Tab:=False, _
+        Semicolon:=False, _
+        Comma:=False, _
+        Space:=True, _
+        Other:=False
+End With
 
     MsgBox "ค้นหาข้อมูลจาก Group Package และ MasterService เสร็จแล้ว", vbInformation
 
