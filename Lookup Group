@@ -12,7 +12,7 @@ Sub LookupGroupAndMasterService()
 
     ' === เปิดไฟล์ 1 ===
     Set wb1 = Workbooks.Open("Path")
-    Set ws1 = wb1.Sheets(Sheet Name) ' เปลี่ยนชื่อชีทถ้าจำเป็น
+    Set ws1 = wb1.Sheets(1) ' เปลี่ยนชื่อชีทถ้าจำเป็น
 
     ' === เปิดไฟล์ 2 ===
     Set wb2 = Workbooks.Open("Path")
