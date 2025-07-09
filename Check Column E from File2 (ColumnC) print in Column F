@@ -1,0 +1,53 @@
+Sub CompareAndMarkVoid()
+    Dim wbDetail As Workbook
+    Dim wbVoid As Workbook
+    Dim wsDetail As Worksheet
+    Dim wsVoid As Worksheet
+    Dim lastRowDetail As Long
+    Dim lastRowVoid As Long
+    Dim voidValues As Object
+    Dim i As Long
+    Dim pathDetail As String, pathVoid As String
+
+    ' กำหนด path ของไฟล์
+    pathDetail = "Location-1"
+    pathVoid = "Location-2"
+
+    ' เปิดไฟล์
+    Set wbDetail = Workbooks.Open(pathDetail)
+    Set wbVoid = Workbooks.Open(pathVoid)
+    
+    ' เลือกแผ่นงานแรก (ถ้าชื่อไม่ใช่ Sheet1 ให้ใส่ชื่อให้ถูกต้อง)
+    Set wsDetail = wbDetail.Sheets(1)
+    Set wsVoid = wbVoid.Sheets(1)
+    
+    lastRowDetail = wsDetail.Cells(wsDetail.Rows.Count, "E").End(xlUp).Row
+    lastRowVoid = wsVoid.Cells(wsVoid.Rows.Count, "C").End(xlUp).Row
+    
+    ' สร้าง Dictionary เก็บค่าจาก Column C
+    Set voidValues = CreateObject("Scripting.Dictionary")
+    
+    For i = 2 To lastRowVoid
+        If Not IsEmpty(wsVoid.Cells(i, "C").Value) Then
+            voidValues(wsVoid.Cells(i, "C").Value) = True
+        End If
+    Next i
+    
+    ' เปรียบเทียบข้อมูลใน Column E กับ Column C
+    For i = 2 To lastRowDetail
+        If Not IsEmpty(wsDetail.Cells(i, "E").Value) Then
+            If voidValues.exists(wsDetail.Cells(i, "E").Value) Then
+                wsDetail.Cells(i, "F").Value = "Void"
+            Else
+                wsDetail.Cells(i, "F").Value = "Correct"
+            End If
+        Else
+            wsDetail.Cells(i, "F").Value = "Correct"
+        End If
+    Next i
+    
+    MsgBox "เสร็จสิ้นการตรวจสอบข้อมูล", vbInformation
+
+    ' ลบบรรทัดนี้ออกหากไม่ต้องการปิดไฟล์ Void
+    ' wbVoid.Close SaveChanges:=False
+End Sub
