@@ -1,0 +1,77 @@
+Sub LookupGroupAndMasterService()
+
+    Dim wb1 As Workbook
+    Dim wb2 As Workbook
+    Dim ws1 As Worksheet
+    Dim wsGroup As Worksheet
+    Dim wsMaster As Worksheet
+    Dim lastRow1 As Long
+    Dim lookupKey As Variant
+    Dim matchRow As Range
+    Dim i As Long
+
+    ' === เปิดไฟล์ 1 ===
+    Set wb1 = Workbooks.Open("Path")
+    Set ws1 = wb1.Sheets(Sheet Name) ' เปลี่ยนชื่อชีทถ้าจำเป็น
+
+    ' === เปิดไฟล์ 2 ===
+    Set wb2 = Workbooks.Open("Path")
+    Set wsGroup = wb2.Sheets("Group Package")
+    Set wsMaster = wb2.Sheets("MasterService")
+    Set wsProdct = wb2.Sheets("ProductinCat.Group.Type")
+
+    ' === เคลียร์ข้อมูลใน Column G:I ค้นหา ===
+    lastRow1 = ws1.Cells(ws1.Rows.Count, "J").End(xlUp).Row
+    lastRow2 = ws1.Cells(ws1.Rows.Count, "K").End(xlUp).Row
+    ws1.Range("G2:I" & lastRow1).ClearContents
+
+    ' === ขั้นที่ 1: ค้นจาก Column J ใน Group Package (Column A -> D,E,F) ===
+    For i = 2 To lastRow1
+        lookupKey = ws1.Cells(i, "J").Value
+
+        If Not IsEmpty(lookupKey) Then
+            Set matchRow = wsGroup.Range("A:A").Find(What:=lookupKey, LookIn:=xlValues, LookAt:=xlWhole)
+
+            If Not matchRow Is Nothing Then
+                ws1.Cells(i, "G").Value = wsGroup.Cells(matchRow.Row, "D").Value
+                ws1.Cells(i, "H").Value = wsGroup.Cells(matchRow.Row, "E").Value
+                ws1.Cells(i, "I").Value = wsGroup.Cells(matchRow.Row, "F").Value
+            End If
+        End If
+    Next i
+
+    ' === ขั้นที่ 2: ค้นจาก Column K ใน MasterService (Column D -> G,H,I) ===
+    For i = 2 To lastRow2
+        lookupKey = ws1.Cells(i, "K").Value
+
+        If Not IsEmpty(lookupKey) Then
+            Set matchRow = wsMaster.Range("D:D").Find(What:=lookupKey, LookIn:=xlValues, LookAt:=xlWhole)
+
+            If Not matchRow Is Nothing Then
+                ' เขียนทับ G,H,I ด้วยข้อมูลจาก MasterService
+                ws1.Cells(i, "G").Value = wsMaster.Cells(matchRow.Row, "G").Value
+                ws1.Cells(i, "H").Value = wsMaster.Cells(matchRow.Row, "H").Value
+                ws1.Cells(i, "I").Value = wsMaster.Cells(matchRow.Row, "I").Value
+            End If
+        End If
+    Next i
+
+    ' === ขั้นที่ 3: ค้นจาก Column K ใน ProductinCat.Group.Type (Column A -> C,D,E) ===
+    For i = 2 To lastRow2
+        lookupKey = ws1.Cells(i, "K").Value
+
+        If Not IsEmpty(lookupKey) Then
+            Set matchRow = wsProduct.Range("A:A").Find(What:=lookupKey, LookIn:=xlValues, LookAt:=xlWhole)
+
+            If Not matchRow Is Nothing Then
+                ' เขียนทับ G,H,I ด้วยข้อมูลจาก MasterService
+                ws1.Cells(i, "G").Value = wsProduct.Cells(matchRow.Row, "D").Value
+                ws1.Cells(i, "H").Value = wsProduct.Cells(matchRow.Row, "E").Value
+                ws1.Cells(i, "I").Value = wsProduct.Cells(matchRow.Row, "F").Value
+            End If
+        End If
+    Next i
+
+    MsgBox "ค้นหาข้อมูลจาก Group Package และ MasterService เสร็จแล้ว", vbInformation
+
+End Sub
