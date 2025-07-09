@@ -1,0 +1,15 @@
+#Dim การใช้คือเหมือนการกำหนด Type ของตัวแปร
+#i คือตัวแปร
+#String = ข้อความ
+#Long = จำนวนเต็ม
+#Single = ทศนิยม 1 หลัก
+#Double = ทศนิยมสูงสุด 15 หลัก
+#Currency = ทศนิยม 4 หลัก
+วิธีการใช้
+Sub ExampleText()
+    Dim message As String
+    message = "สวัสดี VBA!"
+
+    MsgBox message
+End Sub
+#จำเป็นต้องกำหนด Type ของตัวแปรก่อนด้วย Dim
